@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, Schoilar, June, JJChu, blog" />
+  <meta name="keywords" content="https," />
 
 
 
@@ -87,29 +87,30 @@
 
 
 
-<meta name="description" content="近几年，互联网发生着翻天覆地的变化，尤其是我们一直习以为常的 HTTP 协议，在逐渐的被 HTTPS 协议所取代，在浏览器、搜索引擎、CA机构、大型互联网企业的共同促进下，互联网迎来了“HTTPS加密时代”，HTTPS 将在未来的几年内全面取代 HTTP 成为传输协议的主流。希望大家带着下面几个问题思考：  HTTP 通信存在什么问题； HTTPS 如何解决了这些问题； CA 证书的认证过程；">
+<meta name="description" content="详解 HTTPS">
+<meta name="keywords" content="https">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入HTTPS">
 <meta property="og:url" content="https://jjchu.github.io/2020/03/04/深入HTTPS/index.html">
 <meta property="og:site_name" content="Scoilar&#39;s Home">
-<meta property="og:description" content="近几年，互联网发生着翻天覆地的变化，尤其是我们一直习以为常的 HTTP 协议，在逐渐的被 HTTPS 协议所取代，在浏览器、搜索引擎、CA机构、大型互联网企业的共同促进下，互联网迎来了“HTTPS加密时代”，HTTPS 将在未来的几年内全面取代 HTTP 成为传输协议的主流。希望大家带着下面几个问题思考：  HTTP 通信存在什么问题； HTTPS 如何解决了这些问题； CA 证书的认证过程；">
+<meta property="og:description" content="详解 HTTPS">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_https.png">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_wiretap.png">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_pretend.jpeg">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_tamper.png">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_https_ssl.jpg">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_tls_ssl.png">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_process.png">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_hash_en.png">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_hash_de.png">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_all.jpg">
-<meta property="og:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/connect_zh_cn.png">
-<meta property="og:updated_time" content="2021-03-04T05:24:31.848Z">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_https.png">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_wiretap.png">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_pretend.jpeg">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_tamper.png">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_https_ssl.jpg">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_tls_ssl.png">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_process.png">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_hash_en.png">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_hash_de.png">
+<meta property="og:image" content="https://jjchu.github.io/images/https/img_all.jpg">
+<meta property="og:image" content="https://jjchu.github.io/images/https/connect_zh_cn.png">
+<meta property="og:updated_time" content="2021-03-04T06:36:56.143Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入HTTPS">
-<meta name="twitter:description" content="近几年，互联网发生着翻天覆地的变化，尤其是我们一直习以为常的 HTTP 协议，在逐渐的被 HTTPS 协议所取代，在浏览器、搜索引擎、CA机构、大型互联网企业的共同促进下，互联网迎来了“HTTPS加密时代”，HTTPS 将在未来的几年内全面取代 HTTP 成为传输协议的主流。希望大家带着下面几个问题思考：  HTTP 通信存在什么问题； HTTPS 如何解决了这些问题； CA 证书的认证过程；">
-<meta name="twitter:image" content="https://jjchu.github.io/2020/03/04/深入HTTPS/images/img_https.png">
+<meta name="twitter:description" content="详解 HTTPS">
+<meta name="twitter:image" content="https://jjchu.github.io/images/https/img_https.png">
 
 
 
@@ -339,6 +340,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络/" itemprop="url" rel="index">
+                    <span itemprop="name">网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -351,6 +374,10 @@
 
           
 
+          
+              <div class="post-description">
+                  详解 HTTPS
+              </div>
           
 
         </div>
@@ -382,12 +409,12 @@
 </ol>
 <p>HTTPS 是在 HTTP 上建立 SSL 加密层，并对传输数据进行加密，<strong>是 HTTP 协议的安全版</strong>。现在它被广泛用于万维网上安全敏感的通讯，例如交易支付方面。</p>
 <p>使用 HTTPS 通信时，不再用 <code>http://</code>，而是改用 <code>https://</code>。另外，当浏览器访问 HTTPS 通信有效的 Web网站时，浏览器的地址栏内会出现一个带锁的标记。对 HTTPS 的显示方式会因浏览器的不同而有所改变。</p>
-<p><img src="./images/img_https.png" alt="https"></p>
+<p><img src="/images/https/img_https.png" alt="https"></p>
 <h2 id="为什么需要-HTTPS？"><a href="#为什么需要-HTTPS？" class="headerlink" title="为什么需要 HTTPS？"></a>为什么需要 HTTPS？</h2><p>HTTPS 是专为解决 HTTP 中的问题而诞生的，了解 HTTPS 前，我们先来盘点 HTTP 中的问题：</p>
 <p><strong>1. 通信使用明文（不加密），内容可能会被窃听</strong></p>
 <p>HTTP 本身不具备加密功能，所以无法对通信整体（请求和相应的内容）进行加密（其实所有未加密的协议都会存在这类问题）。因为互联网是由连通道世界各地的网络组成，在此通信线路上的某些网络设备、光缆、计算机都不可能是个人的私有物，所以无法保证在某个环节遭到恶意窥视。</p>
 <p>及时已经过加密处理的通信，也会被窥视到通信内容，只不过如果信息经过加密，就有可能让人无法破解报文原本内容。窃听并非难事，被广泛使用的那些抓包和嗅探器工具就可以。</p>
-<p><img src="./images/img_wiretap.png" alt="网络窃听"></p>
+<p><img src="/images/https/img_wiretap.png" alt="网络窃听"></p>
 <p><strong>2. 不验证通信方的身份就可能遭遇伪装</strong></p>
 <p>HTTP协议中的请求和响应不会对通信方进行确认。在HTTP协议通信时，由于不存在确认通信方的处理步骤，任何人都可以发起请求。另外，服务器只要接收到请求，不管对方是谁都会返回一个响应（但也仅限于发送端的IP地址和端口号没有被Web服务器设定限制访问的前提下）。所以会存在以下各种隐患：</p>
 <ul>
@@ -397,11 +424,11 @@
 <li>无法判定请求来自何方、出自谁收；</li>
 <li>即使是无意义的请求也会照单全收。无法阻止海量强求下的 <a href="https://baike.baidu.com/item/DoS%E6%94%BB%E5%87%BB" target="_blank" rel="noopener">DoS 攻击（拒接服务攻击）</a></li>
 </ul>
-<p><img src="./images/img_pretend.jpeg" alt=""></p>
+<p><img src="/images/https/img_pretend.jpeg" alt=""></p>
 <p><strong>3. 无法证明报文的完整性，可能已遭篡改</strong></p>
 <p>所谓完整性是指信息的准确度。若无法证明其完整性，通常也就意味着无法判断信息是否准确。由于HTTP协议无法证明通信的报文完整性，因此，在请求或响应送出之后直到对方接收之前的这段时间内，即使请求或响应的内容遭到篡改，也没有办法获悉。换句话说，没有任何办法确认，发出的请求/响应和接收到的请求/响应是前后相同的。像这样，请求或响应在传输途中，遭攻击者拦截并篡改内容的攻击成为中间人攻击（MIMT）</p>
-<p><img src="./images/img_tamper.png" alt=""></p>
-<h2 id="HTTPS-是如何解决这些问题的？"><a href="#HTTPS-是如何解决这些问题的？" class="headerlink" title="HTTPS 是如何解决这些问题的？"></a>HTTPS 是如何解决这些问题的？</h2><p><img src="./images/img_https_ssl.jpg" alt=""></p>
+<p><img src="/images/https/img_tamper.png" alt=""></p>
+<h2 id="HTTPS-是如何解决这些问题的？"><a href="#HTTPS-是如何解决这些问题的？" class="headerlink" title="HTTPS 是如何解决这些问题的？"></a>HTTPS 是如何解决这些问题的？</h2><p><img src="/images/https/img_https_ssl.jpg" alt=""></p>
 <p>HTTPS 是披着 SSL 协议这层外衣的 HTTP。通常，HTTP 直接和 TCP 通信；当使用 SSL 时，则演变成先和 SSL 通信，再由 SSL 和 TCP 通信。SSL 是当今世界上应用最为广泛的网络安全技术，有了 SSL 之后，HTTP 就拥有了加密、证书和完整性保护的功能。</p>
 <p>HTTPS 协议的主要功能基本都依赖于 TLS/SSL 协议，TLS/SSL 的功能实现主要依赖于三类基本算法：散列函数 、对称加密和非对称加密：</p>
 <ul>
@@ -409,7 +436,7 @@
 <li>对称加密算法采用协商的密钥对数据加密；</li>
 <li>基于散列函数验证信息的完整性。</li>
 </ul>
-<p><img src="./images/img_tls_ssl.png" alt=""></p>
+<p><img src="/images/https/img_tls_ssl.png" alt=""></p>
 <p><strong>1. 解决内容可能被窃听的问题 – 加密</strong></p>
 <p>HTTPS 利用非对称加密实现身份认证和密钥协商；然后采用对称加密算法使用协商的密钥对数据加密。这种方式具体原因如下：</p>
 <p>近代的加密方式都是公开的，秘钥都是保密的，通过这种方式得以保持加密方法的安全性。加密和解密都需要秘钥，没有秘钥就无法对秘钥解密；反过来，任何人持有秘钥就能解密了。如果秘钥被攻击者获得，加密也就失去了意义；</p>
@@ -425,7 +452,7 @@
 <li>公钥并不包含服务器的信息，使用非对称加密算法无法确保服务器身份的合法性，存在中间人攻击的风险，服务器发送给客户端的公钥可能在传送过程中被中间人截获并篡改；</li>
 </ul>
 <p>因为非对称加密的处理速度要比对称加密的效率要慢，所以 <strong>HTTPS 充分采用两者的优势，在交换秘钥环节使用非对称加密（来协商秘钥），之后的建立通信交换报文阶段则使用对称加密方式</strong>。</p>
-<p><img src="./images/img_process.png" alt=""></p>
+<p><img src="/images/https/img_process.png" alt=""></p>
 <p><strong>2. 解决通信方身份可能被伪装的问题 —— 数字证书</strong></p>
 <p>因为公开秘钥加密方式无法证明公开秘钥本身就是货真价实的公开秘钥。比如，正想和某台服务器建立公开秘钥加密方式下的通信时，如何证明收到的公开秘钥就是原本预想的那台服务器的公开秘钥。或许在公开密钥传输途中，真正的公开秘钥已经被攻击者替换掉了。</p>
 <p>为解决上述问题，可以使用数字证书认证机构（CA）和其相关机关颁发的公开秘钥证书。</p>
@@ -447,11 +474,11 @@
 </ul>
 <p>数字签名如何生成:</p>
 <p>将一段文本先用Hash函数生成消息摘要，然后用发送者的私钥加密生成数字签名，与原文文一起传送给接收者。接下来就是接收者校验数字签名的流程了。</p>
-<p><img src="./images/img_hash_en.png" alt=""></p>
+<p><img src="/images/https/img_hash_en.png" alt=""></p>
 <p>校验数字签名流程：</p>
 <p>接收者只有用发送者的公钥才能解密被加密的摘要信息，然后用HASH函数对收到的原文产生一个摘要信息，与上一步得到的摘要信息对比。如果相同，则说明收到的信息是完整的，在传输过程中没有被修改，否则说明信息被修改过，因此数字签名能够验证信息的完整性。</p>
-<p><img src="./images/img_hash_de.png" alt=""></p>
-<h2 id="HTTPS-的整个通信流程"><a href="#HTTPS-的整个通信流程" class="headerlink" title="HTTPS 的整个通信流程"></a>HTTPS 的整个通信流程</h2><p><img src="./images/img_all.jpg" alt=""></p>
+<p><img src="/images/https/img_hash_de.png" alt=""></p>
+<h2 id="HTTPS-的整个通信流程"><a href="#HTTPS-的整个通信流程" class="headerlink" title="HTTPS 的整个通信流程"></a>HTTPS 的整个通信流程</h2><p><img src="/images/https/img_all.jpg" alt=""></p>
 <ol>
 <li>客户端通过发送 <strong>Client Hello</strong> 报文开始 SSL 通信。报文中包含客户端支持的 SSL 的指定版本、加密组件（Cipher Suite）列表（所使用的加密算法及密钥长度等），以及一个随机数（<code>RandomA</code>），稍后用于生成”对话密钥”。</li>
 <li>服务器可进行 SSL 通信时，会以 <strong>Server Hello*</strong> 报文作为应答。和客户端一样，在报文中包含 SSL 版本以及加密组件（服务器的加密组件内容是从接收到的客户端加密组件内筛选出来的，确认加密方式，比如 RSA），一个随机数（<code>RandomB</code>），稍后用于生成”对话密钥”。</li>
@@ -468,7 +495,7 @@
 </ol>
 <p>在以上流程中，应用层发送数据时会附加一种叫做 MAC（Message Authentication Code）的报文摘要。MAC 能够查知报文是否遭到篡改，从而保护报文的完整性。</p>
 <p><strong>更详细的过程看下图：</strong></p>
-<p><img src="./images/connect_zh_cn.png" alt=""></p>
+<p><img src="/images/https/connect_zh_cn.png" alt=""></p>
 <p>::: tip 至于为什么一定要用三个随机数？<br>“不管是客户端还是服务器，都需要随机数，这样生成的密钥才不会每次都一样。由于SSL协议中证书是静态的，因此十分有必要引入一种随机因素来保证协商出来的密钥的随机性。</p>
 <p>对于RSA密钥交换算法来说，pre-master-key 本身就是一个随机数，再加上 hello 消息中的随机，三个随机数通过一个密钥导出器最终导出一个对称密钥。</p>
 <p>pre-master 的存在在于 SSL 协议不信任每个主机都能产生完全随机的随机数，如果随机数不随机，那么 pre-master secret 就有可能被猜出来，那么仅适用 pre master secret 作为密钥就不合适了，因此必须引入新的随机因素，那么客户端和服务器加上 pre master secret 三个随机数一同生成的密钥就不容易被猜出了，一个伪随机可能完全不随机，可是是三个伪随机就十分接近随机了，每增加一个自由度，随机性增加的可不是一。”<br>:::</p>
@@ -507,6 +534,12 @@
     </div>
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/https/" rel="tag"># https</a>
+          
+        </div>
       
 
       
@@ -608,7 +641,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -619,7 +652,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
