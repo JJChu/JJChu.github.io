@@ -1,0 +1,838 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="完整实现发布订阅模式，以及发布订阅和观察者模式的区别">
+<meta name="keywords" content="设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="发布订阅和观察者模式">
+<meta property="og:url" content="https://jjchu.github.io/2021/03/04/发布订阅和观察者模式/index.html">
+<meta property="og:site_name" content="Scoilar&#39;s Home">
+<meta property="og:description" content="完整实现发布订阅模式，以及发布订阅和观察者模式的区别">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://jjchu.github.io/images/sub_pub/sub_pub.png">
+<meta property="og:updated_time" content="2021-03-06T08:59:29.101Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="发布订阅和观察者模式">
+<meta name="twitter:description" content="完整实现发布订阅模式，以及发布订阅和观察者模式的区别">
+<meta name="twitter:image" content="https://jjchu.github.io/images/sub_pub/sub_pub.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":20,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jjchu.github.io/2021/03/04/发布订阅和观察者模式/"/>
+
+
+
+
+
+  <title> 发布订阅和观察者模式 | Scoilar's Home </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Scoilar's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">June</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://jjchu.github.io/2021/03/04/发布订阅和观察者模式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="June">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Scoilar's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                发布订阅和观察者模式
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-04T15:06:39+00:00">
+                2021-03-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  完整实现发布订阅模式，以及发布订阅和观察者模式的区别
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <a id="more"></a>
+<h2 id="概念说明"><a href="#概念说明" class="headerlink" title="概念说明"></a>概念说明</h2><p>在说明概念之前，我们先来解决一个业务场景：有一位同事写了一个 todo-list 模块，可以添加删除一个任务，另一个同学写了一个过滤器模块，可以过滤出 todo-list 里已完成的和未完成的。这两个模块在相互独立的情况下怎么去对接，很多人应该已经想到了在 vue 中我们可以在过滤器组件里去 emit 一个自定义事件，在 list 组件里监听自定义事件去进行操作。其实这里就用到了发布订阅模式。</p>
+<p>我们来看它的概念，发布订阅模式（Publish–subscribe pattern）是一种消息范式，也称事件机制，它定义了一种依赖关系，解决了多个主体之间功能的耦合。</p>
+<p>JS 原生支持<a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/Events/Creating_and_triggering_events" target="_blank" rel="noopener">自定义事件</a>，就是发布订阅模式的一种实现，能让我们更好的维护两个系统的沟通：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cb</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(e.detail)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听一个自定义 build 事件</span></span><br><span class="line"><span class="built_in">document</span>.addEventListener(<span class="string">'build'</span>, cb);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 手动触发 build 事件</span></span><br><span class="line"><span class="keyword">var</span> event = <span class="keyword">new</span> CustomEvent(<span class="string">'build'</span>, &#123;</span><br><span class="line">  detail: elem.dataset.time</span><br><span class="line">&#125;);</span><br><span class="line"><span class="built_in">document</span>.dispatchEvent(event);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 手动移除自定义 build 事件</span></span><br><span class="line"><span class="built_in">document</span>.removeEventListener(<span class="string">'build'</span>, cb);</span><br></pre></td></tr></table></figure>
+<p>Vue 中也集成了完整的发布订阅模式，来辅助组件之间的通信，官方案例中的 EventBus：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// event-bus.js</span></span><br><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> EventBus = <span class="keyword">new</span> Vue()</span><br><span class="line"></span><br><span class="line"><span class="comment">// A.vue</span></span><br><span class="line"><span class="keyword">import</span> &#123; EventBus &#125; <span class="keyword">from</span> <span class="string">"./event-bus.js"</span>;</span><br><span class="line">EventBus.$emit(<span class="string">"aMsg"</span>, <span class="string">'来自A页面的消息'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// B.vue</span></span><br><span class="line"><span class="keyword">import</span> &#123; EventBus &#125; <span class="keyword">from</span> <span class="string">"./event-bus.js"</span>;</span><br><span class="line">EventBus.$on(<span class="string">"aMsg"</span>, (msg) =&gt; &#123;</span><br><span class="line">  <span class="comment">// A发送来的消息</span></span><br><span class="line">  <span class="built_in">console</span>.log(msg);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>我们现在可以总结如下：发布订阅模式是解决两个主体之间的信息沟通问题，能最大程度上保障高内聚、低耦合，订阅者可以订阅（on）某个主题（事件），发布者可以在合适的时机发布这个主题（fire），当然也可以移除这个主题（off）。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>我们根据它的功能描述先搭起整体框架：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventHub</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="comment">// 维护订阅的事件</span></span><br><span class="line">    <span class="keyword">this</span>.eventMap = &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 订阅某个主题，注册回调函数</span></span><br><span class="line">  on(event, cb) &#123;&#125;</span><br><span class="line">  <span class="comment">// 取消订阅</span></span><br><span class="line">  off(event, cb) &#123;&#125;</span><br><span class="line">  <span class="comment">// 发布某个主题</span></span><br><span class="line">  fire(event) &#123;&#125;</span><br><span class="line">  <span class="comment">// 只订阅一次，执行之后立即销毁</span></span><br><span class="line">  once(event, cb) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>我们来依次实现上面的方法，其中 on 和 fire 是比较简单的：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventHub</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.eventMap = &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  on(event, cb) &#123;</span><br><span class="line">    <span class="comment">// 向 eventMap 加入一个事件，并维护一个数组，放入注册的回调函数</span></span><br><span class="line">    (<span class="keyword">this</span>.eventMap[event] || (<span class="keyword">this</span>.eventMap[event] = [])).push(cb);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  fire(event, ...args) &#123;</span><br><span class="line">    (<span class="keyword">this</span>.eventMap[event] || []).forEach(<span class="function"><span class="params">cb</span> =&gt;</span> &#123;</span><br><span class="line">      cb(...args);</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>接下来实现 off 函数，功能上需要满足：<ul>
+<li>如果没有传 event，即表示移除所有回调函数；</li>
+<li>传入 event，但没有传 cb，则移除指定 event 的回调；</li>
+<li>传入 event 和 cb，表示只移除指定 cb；</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventHub</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.eventMap = &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  off(event, cb) &#123;</span><br><span class="line">    <span class="comment">// 没有传入参数，移除所有</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">arguments</span>.length === <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.eventMap = &#123;&#125;;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 传入 event，没有传入 cb</span></span><br><span class="line">    <span class="keyword">if</span> (event &amp;&amp; !cb) &#123;</span><br><span class="line">      <span class="keyword">this</span>.eventMap[event] = <span class="literal">null</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 传入 event 和 cb，我们把它从数组中移除</span></span><br><span class="line">    <span class="keyword">const</span> cbs = <span class="keyword">this</span>.eventMap[event] || [];</span><br><span class="line">    <span class="keyword">let</span> i = cbs.length;</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">      <span class="keyword">if</span> (cbs[i] === cb) &#123;</span><br><span class="line">        cbs.splice(i, <span class="number">1</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>最后我们实现 once，once 的意思是注册的回调函数只会执行一次，其实也很简单，我们调用 cb 的同时进行销毁就可以了。下面用了一个临时函数 temp 将回调函数的执行和销毁进行包装，这样就可以简单实现了：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventHub</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.eventMap = &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  once(event, cb) &#123;</span><br><span class="line">    <span class="comment">// 用 temp 函数包装（执行 cb 的同时，取消它的订阅）</span></span><br><span class="line">    <span class="keyword">const</span> temp = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.off(event, temp);</span><br><span class="line">      cb(...arguments);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.on(event, temp);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里其实还有个小问题，因为我们对注册的 cb 用 temp 函数进行了包装，<br>那么在使用 off(event, cb) 进行移除注册的 cb 时，就会失败，因为 temp 和 cb 是完全的两个函数，无法判断相等。这里我们只需要简单改造一下就可以啦。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventHub</span> </span>&#123;</span><br><span class="line">  once(event, cb) &#123;</span><br><span class="line">    <span class="keyword">const</span> temp = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.off(event, temp);</span><br><span class="line">      cb(...arguments);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 1. 将原本的 cb 函数挂在 temp 函数属性上</span></span><br><span class="line">    temp.origin_cb = cb;</span><br><span class="line">    <span class="keyword">this</span>.on(event, temp);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  off(event, cb) &#123;</span><br><span class="line">    <span class="keyword">const</span> cbs = <span class="keyword">this</span>.eventMap[event] || [];</span><br><span class="line">    <span class="keyword">let</span> i = cbs.length;</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">      <span class="comment">// 2. 移除的时候加一个判断，判断挂在回调函数上的 origin_cb 是否等于 cb</span></span><br><span class="line">      <span class="keyword">if</span> (cbs[i] === cb || cbs[i].origin_cb === cb) &#123;</span><br><span class="line">        cbs.splice(i, <span class="number">1</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样 once 的功能就完整了。</p>
+<h2 id="完整代码和测试用例"><a href="#完整代码和测试用例" class="headerlink" title="完整代码和测试用例"></a>完整代码和测试用例</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventHub</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.eventMap = &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  on(event, cb) &#123;</span><br><span class="line">    (<span class="keyword">this</span>.eventMap[event] || (<span class="keyword">this</span>.eventMap[event] = [])).push(cb);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  fire(event, ...args) &#123;</span><br><span class="line">    (<span class="keyword">this</span>.eventMap[event] || []).forEach(<span class="function"><span class="params">cb</span> =&gt;</span> &#123;</span><br><span class="line">      cb(...args);</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  off(event, cb) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">arguments</span>.length === <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.eventMap = &#123;&#125;;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (event &amp;&amp; !cb) &#123;</span><br><span class="line">      <span class="keyword">this</span>.eventMap[event] = <span class="literal">null</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> cbs = <span class="keyword">this</span>.eventMap[event] || [];</span><br><span class="line">    <span class="keyword">let</span> i = cbs.length;</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">      <span class="keyword">if</span> (cbs[i] === cb || cbs[i].origin_cb === cb) &#123;</span><br><span class="line">        cbs.splice(i, <span class="number">1</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  once(event, cb) &#123;</span><br><span class="line">    <span class="keyword">const</span> temp = <span class="function">(<span class="params">...args</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.off(event, temp);</span><br><span class="line">      cb(...args);</span><br><span class="line">    &#125;</span><br><span class="line">    temp.origin_cb = cb;</span><br><span class="line">    <span class="keyword">this</span>.on(event, temp);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编写测试用例进行验证：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> event = <span class="keyword">new</span> EventHub();</span><br><span class="line"><span class="comment">// 1. 测试订阅功能</span></span><br><span class="line"><span class="comment">// 我们订阅 test1 消息，注册了两个函数；</span></span><br><span class="line"><span class="comment">// 我们订阅 test2 消息，注册了一个函数</span></span><br><span class="line"><span class="keyword">const</span> testFn1 = <span class="function">(<span class="params">msg</span>) =&gt;</span> &#123; <span class="built_in">console</span>.log(<span class="string">"fn1"</span>, msg) &#125;;</span><br><span class="line"><span class="keyword">const</span> testFn2 = <span class="function">(<span class="params">msg</span>) =&gt;</span> &#123; <span class="built_in">console</span>.log(<span class="string">"fn2"</span>, msg) &#125;;</span><br><span class="line">event.on(<span class="string">"test1"</span>, testFn1)</span><br><span class="line">  .on(<span class="string">"test1"</span>, testFn2)</span><br><span class="line">  .on(<span class="string">"test2"</span>, testFn2);</span><br><span class="line"></span><br><span class="line">event.fire(<span class="string">"test1"</span>, <span class="string">"触发 test1"</span>)</span><br><span class="line">  .fire(<span class="string">"test2"</span>, <span class="string">"触发 test2"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 测试 off 功能</span></span><br><span class="line"><span class="comment">// 我们取消了 test1 中的 testFn2 回调函数；</span></span><br><span class="line"><span class="comment">// 我们取消了 test2 中所有回调；</span></span><br><span class="line">event.off(<span class="string">"test1"</span>, testFn2)</span><br><span class="line">  .off(<span class="string">"test2"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 测试 once 功能</span></span><br><span class="line"><span class="comment">// 我们通过 once 订阅一个 test3 消息，注册一个函数</span></span><br><span class="line"><span class="keyword">const</span> testFn3 = <span class="function">(<span class="params">msg</span>) =&gt;</span> &#123; <span class="built_in">console</span>.log(<span class="string">"fn3"</span>, msg) &#125;;</span><br><span class="line">event.once(<span class="string">"test3"</span>, testFn3);</span><br><span class="line">event.fire(<span class="string">"test3"</span>, <span class="string">"触发 test3，执行第一次"</span>);</span><br><span class="line">event.fire(<span class="string">"test3"</span>, <span class="string">"触发 test3，执行第二次"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 测试 once 的取消功能</span></span><br><span class="line"><span class="comment">// 我们通过 once 订阅一个 test4 消息，注册一个函数</span></span><br><span class="line"><span class="comment">// 我们移除 test4 消息</span></span><br><span class="line"><span class="keyword">const</span> testFn4 = <span class="function">(<span class="params">msg</span>) =&gt;</span> &#123; <span class="built_in">console</span>.log(<span class="string">"fn4"</span>, msg) &#125;;</span><br><span class="line">event.once(<span class="string">"test4"</span>, testFn4)</span><br><span class="line">  .off(<span class="string">"test4"</span>);</span><br><span class="line">event.fire(<span class="string">"test4"</span>, <span class="string">"触发 test4"</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="相关问题"><a href="#相关问题" class="headerlink" title="相关问题"></a>相关问题</h2><h3 id="发布订阅模式和观察者模式的区别？"><a href="#发布订阅模式和观察者模式的区别？" class="headerlink" title="发布订阅模式和观察者模式的区别？"></a>发布订阅模式和观察者模式的区别？</h3><p>这是一个老生常谈的问题，网上也众说纷纭，我们先从维基百科上来看看它俩的官方定义：</p>
+<blockquote>
+<p><strong>发布-订阅</strong>是一种消息范式，消息的发送者（称为发布者）不会将消息直接发送给特定的接收者（即订阅者）。而是将发布的消息分为不同的类别，无需了解哪些订阅者（如果有的话）可能存在。同样的，订阅者可以表达对一个或多个类别的兴趣，只接收感兴趣的消息，无需了解哪些发布者（如果有的话）存在。</p>
+</blockquote>
+<blockquote>
+<p><strong>观察者模式</strong>是软件设计模式的一种。在此种模式中，一个目标对象管理所有相依于它的观察者对象，并且在它本身的状态改变时主动发出通知。这通常透过呼叫各观察者所提供的方法来实现，此种模式通常被用来实时事件处理系统。</p>
+</blockquote>
+<p>两者的区别可以用下面两个图简单表示：</p>
+<p><img src="/images/sub_pub/sub_pub.png" alt=""></p>
+<p>我们大体上可以总结如下：</p>
+<ul>
+<li>发布订阅模式和观察者模式都是处理依赖和被依赖的两个对象之间关系的一种模式，发布-订阅模式是观察者模式的一种变体。</li>
+<li>在观察者模式中，观察者是知道 Subject 的，Subject 也记录了所有的观察者。在发布订阅模式中，发布者和订阅者不知道对方的存在，它们只有通过消息代理进行通信；</li>
+<li>观察者模式大多表示的是<em>一对多的关系</em>；发布订阅模式大多表示的是<em>多对多的关系</em>。</li>
+<li>观察者模式大多数时候是同步的，比如当事件触发，Subject 就会去调用观察者的方法。而发布-订阅模式大多数时候是异步的（使用消息队列）</li>
+</ul>
+<p>举一个生活中的例子。观察者模式就像是在街边摆摊卖炒粉的商贩，他要记录都有哪些人定了餐（记录观察者），等到炒好了（自身状态变化）就会给这些人打包并通知他们。</p>
+<p>而发布订阅模式更像是在餐厅里订餐，我们（订阅者）会扫餐桌上的二维码点各种餐（订阅不同的主题），对于后厨人员来说，他们并不知道谁点了餐，只需要关注订餐系统（Event Channel）推给他们的清单进行制作，等做好了也同样是去点击订餐系统去通知到顾客。</p>
+<p>我们再来实现一个简单的观察者模式，在观察者模式中，Subject 对象拥有添加、删除和通知一系列 Observer 的方法等等，而 Observer 对象拥有更新方法等等：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Subject</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.observers = [];</span><br><span class="line">  &#125;</span><br><span class="line">  add(observer) &#123;</span><br><span class="line">    <span class="keyword">this</span>.observers.push(observer);</span><br><span class="line">  &#125;</span><br><span class="line">  remove(observer) &#123;</span><br><span class="line">    <span class="keyword">var</span> observers = <span class="keyword">this</span>.observers;</span><br><span class="line">    <span class="keyword">let</span> i = observers.length;</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">      <span class="keyword">if</span> (observers[i] === observer) &#123;</span><br><span class="line">        observers.splice(i, <span class="number">1</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  notify() &#123;  <span class="comment">// 通知</span></span><br><span class="line">    <span class="keyword">this</span>.observers.forEach(<span class="function"><span class="params">observer</span> =&gt;</span> &#123;</span><br><span class="line">      observer.update();</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Observer</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(cb) &#123;</span><br><span class="line">    <span class="keyword">this</span>.cb = cb;</span><br><span class="line">  &#125;</span><br><span class="line">  update()&#123;</span><br><span class="line">    <span class="keyword">this</span>.cb(<span class="built_in">arguments</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 我们来使用</span></span><br><span class="line"><span class="keyword">var</span> sub = <span class="keyword">new</span> Subject();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obs1 = <span class="keyword">new</span> Observer(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="built_in">console</span>.log(<span class="string">"test1"</span>); &#125;);</span><br><span class="line"><span class="keyword">var</span> obs2 = <span class="keyword">new</span> Observer(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="built_in">console</span>.log(<span class="string">"test2"</span>); &#125;);</span><br><span class="line"></span><br><span class="line">sub.add(obs1);</span><br><span class="line">sub.add(obs2);</span><br><span class="line">sub.notify();  <span class="comment">// test1; test2</span></span><br></pre></td></tr></table></figure>
+<h3 id="添加-namespace"><a href="#添加-namespace" class="headerlink" title="添加 namespace"></a>添加 namespace</h3><p>熟悉 jQuery 的人知道，它的事件绑定还提供了命名空间的功能，这在一些场景下为我们提供了很多方便，比如下面例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 我们通过 jq 绑定了两个事件：</span></span><br><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"click"</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"click 1"</span>);</span><br><span class="line">&#125;)</span><br><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"click"</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"click 2"</span>);</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 移除 click 回调函数</span></span><br><span class="line">$(<span class="built_in">document</span>).off(<span class="string">"click"</span>);</span><br></pre></td></tr></table></figure>
+<p>如果我们只想取消 click 2 的回调，此时必须要将 click 2 的回调函数抽离出来，因为低层是通过判断两个回调函数的引用是否相等的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 我们通过 jq 绑定了两个事件：</span></span><br><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"click"</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"click 1"</span>);</span><br><span class="line">&#125;)</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">click2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"click 2"</span>);</span><br><span class="line">&#125;</span><br><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"click"</span>, click2);</span><br><span class="line"><span class="comment">// 此时我们就可以只移除 click2 回调函数</span></span><br><span class="line">$(<span class="built_in">document</span>).off(<span class="string">"click"</span>, click2);</span><br></pre></td></tr></table></figure>
+<p>但这种方式明显变的复杂，所以 jQuery 为我们提供了另一种方式，命名空间：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 我们通过 jq 命名空间的方式绑定了两个事件：</span></span><br><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"click.click1"</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"click 1"</span>);</span><br><span class="line">&#125;)</span><br><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"click.click2"</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"click 2"</span>);</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 此时我们只移除 click2 回调函数就变的很简单</span></span><br><span class="line">$(<span class="built_in">document</span>).off(<span class="string">"click.click2"</span>);</span><br></pre></td></tr></table></figure>
+<p>关于命名空间这里的实现也有很多方法，这里大家可以自行实现一下，就不赘述了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/04/深入HTTPS/" rel="next" title="深入HTTPS">
+                <i class="fa fa-chevron-left"></i> 深入HTTPS
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/03/04/bind-的实现细节/" rel="prev" title="bind 的实现细节">
+                bind 的实现细节 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="June" />
+          <p class="site-author-name" itemprop="name">June</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/JJChu" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://ws1.sinaimg.cn/large/b6d81e13ly1fow7dwvspij20e80e8q2v.jpg" target="_blank" title="WeChat">
+                  
+                    <i class="fa fa-fw fa-weixin"></i>
+                  
+                  WeChat
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/3067616787/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念说明"><span class="nav-number">1.</span> <span class="nav-text">概念说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码实现"><span class="nav-number">2.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整代码和测试用例"><span class="nav-number">3.</span> <span class="nav-text">完整代码和测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关问题"><span class="nav-number">4.</span> <span class="nav-text">相关问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#发布订阅模式和观察者模式的区别？"><span class="nav-number">4.1.</span> <span class="nav-text">发布订阅模式和观察者模式的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加-namespace"><span class="nav-number">4.2.</span> <span class="nav-text">添加 namespace</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">June</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

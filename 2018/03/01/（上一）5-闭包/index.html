@@ -1,0 +1,845 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="你不知道的JS," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="你不知道的JS第五章节">
+<meta name="keywords" content="你不知道的JS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="（上一）5-闭包">
+<meta property="og:url" content="https://jjchu.github.io/2018/03/01/（上一）5-闭包/index.html">
+<meta property="og:site_name" content="Scoilar&#39;s Home">
+<meta property="og:description" content="你不知道的JS第五章节">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-03-06T08:59:29.105Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="（上一）5-闭包">
+<meta name="twitter:description" content="你不知道的JS第五章节">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":20,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jjchu.github.io/2018/03/01/（上一）5-闭包/"/>
+
+
+
+
+
+  <title> （上一）5-闭包 | Scoilar's Home </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Scoilar's Home</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">June</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://jjchu.github.io/2018/03/01/（上一）5-闭包/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="June">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Scoilar's Home">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                （上一）5-闭包
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-01T19:44:45+00:00">
+                2018-03-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/读书笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  你不知道的JS第五章节
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <a id="more"></a>
+<h2 id="闭包定义"><a href="#闭包定义" class="headerlink" title="闭包定义"></a>闭包定义</h2><h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用 域之外执行</p>
+<p>其具体表现为：</p>
+<ul>
+<li>函数在定义时的词法作用域以外的地方被调用</li>
+<li>函数持有对该作用域的引用，这个引用即为闭包</li>
+</ul>
+<p>而且无论通过何种手段将内部函数传递到所在的词法作用域以外，它都会持有对原始定义作用 域的引用，无论在何处执行这个函数都会使用闭包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 一个非常典型的例子</span><br><span class="line"></span><br><span class="line">function foo() &#123; </span><br><span class="line">    var a = 2;</span><br><span class="line">    function bar() &#123; </span><br><span class="line">        console.log( a );</span><br><span class="line">    &#125;</span><br><span class="line">    return bar;</span><br><span class="line">&#125;</span><br><span class="line">var baz = foo();</span><br><span class="line">baz();      // 2  这就是闭包的效果。</span><br></pre></td></tr></table></figure>
+<p>闭包的神奇之处在于阻止了垃圾回收机制。正常一个函数执行后（<code>foo()</code>执行后），foo() 的整个内部作用域都被销毁，但因为 bar() 本身在使用内部作用域，因此内部作用域依然存在，因此没有被回收</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><h4 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h4><p>本质上无论何时何地，如果将函数(访问它们各自的词法作用域)当作第一 级的值类型并到处传递，你就会看到闭包在这些函数中的应用。</p>
+<p>在定时器、事件监听器、 Ajax 请求、跨窗口通信、Web Workers 或者任何其他的异步(或者同步)任务中，只要使 用了回调函数，实际上就是在使用闭包</p>
+<p><strong>IIFE</strong></p>
+<p>首先纠正一个常用技术立即执行函数（IIFE）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var a = 2;</span><br><span class="line">(function IIFE() &#123; </span><br><span class="line">    console.log( a );</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>IIFE 从严格意义来讲它并不是闭包，因为函数并不是在它本身的词法作用域以外执行的。它在定义时所在的作用域中执行</p>
+<p>尽管 IIFE 本身并不是观察闭包的恰当例子，但它的确创建了闭包，并且也是最常用来创建 可以被封闭起来的闭包的工具。因此 IIFE 的确同闭包息息相关，即使本身并不会真的使用 闭包</p>
+<h4 id="循环和闭包"><a href="#循环和闭包" class="headerlink" title="循环和闭包"></a>循环和闭包</h4><p>一个很常见的例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for (var i=1; i&lt;=5; i++) &#123; </span><br><span class="line">    setTimeout( function timer() &#123;</span><br><span class="line">        console.log( i );</span><br><span class="line">    &#125;, i*1000 );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>正常我们想每隔一秒分别打印12345，但实际上每隔一秒打印66666。这与 js 运行机制有关（event loop），setTimeout 为异步任务会在主线任务执行完毕后执行其回调，此时 i 已经变为 6。</p>
+<p>解决办法一个是闭包</p>
+<ul>
+<li>IIFE 会通过声明并立即执行一个函数来创建作用域<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for (var i=1; i&lt;=5; i++) &#123; </span><br><span class="line">    (function(j) &#123;</span><br><span class="line">        setTimeout( function timer() &#123;</span><br><span class="line">            console.log( j );</span><br><span class="line">        &#125;, j*1000 );</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>另一种办法是实名 let </p>
+<ul>
+<li>let 声明，可以用来劫 持块作用域</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for (let i=1; i&lt;=5; i++) &#123; </span><br><span class="line">    setTimeout( function timer() &#123;</span><br><span class="line">        console.log( i );</span><br><span class="line">    &#125;, i*1000 );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>for 循环头部的 let 声明还会有一 个特殊的行为。这个行为指出变量在循环过程中不止被声明一次，每次迭代都会声明。随 后的每个迭代都会使用上一个迭代结束时的值来初始化这个变量</p>
+<h4 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h4><p>怎么才算是一个模块。模块模式需要具备两个必要条件：</p>
+<ol>
+<li>必须有外部的封闭函数，该函数必须至少被调用一次（每次调用都会创建一个新的模块实例）</li>
+<li>封闭函数必须返回至少一个内部函数，这样内部函数才能在私有作用域中形成闭包，并且可以访问或者修改私有的状态</li>
+</ol>
+<blockquote>
+<p>注意：一个具有函数属性的对象本身并不是真正的模块。一个从函数调用所返回的，只有数据属性而没有闭包函数的对象并不是真正的模块<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 这个模式在 JavaScript 中被称为模块。最常见的实现模块模式的方法通常被称为模块暴露， 这里展示的是其变体</span><br><span class="line">function CoolModule() &#123;</span><br><span class="line">    var something = &quot;cool&quot;;</span><br><span class="line"></span><br><span class="line">    function doSomething() &#123; </span><br><span class="line">        console.log( something );</span><br><span class="line">    &#125;</span><br><span class="line">    function doAnother() &#123;</span><br><span class="line">        console.log( another.join( &quot; ! &quot; ) );</span><br><span class="line">    &#125;</span><br><span class="line">    return &#123;</span><br><span class="line">        doSomething: doSomething,</span><br><span class="line">        doAnother: doAnother</span><br><span class="line">    &#125;; </span><br><span class="line">&#125;</span><br><span class="line">var foo = CoolModule();</span><br><span class="line">foo.doSomething();      // cool</span><br><span class="line">foo.doAnother();        // 1 ! 2 ! 3</span><br><span class="line"></span><br><span class="line">// 下面并不算一个真正的模块</span><br><span class="line">var notModule = &#123;</span><br><span class="line">    doSomething() &#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function notModule() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">        a: &apos;123&apos;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>上面的属于一个独立的模块创建器，每次调用都会创建一个新的模块实例，当只需要一个实例时，可以对这个模式进行简单的改进来实现单例模式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var foo = (function CoolModule() &#123;</span><br><span class="line">    var something = &quot;cool&quot;;</span><br><span class="line">    var another = [1, 2, 3];</span><br><span class="line">    function doSomething() &#123;</span><br><span class="line">        console.log( something );</span><br><span class="line">    &#125;</span><br><span class="line">    function doAnother() &#123;</span><br><span class="line">        console.log( another.join( &quot; ! &quot; ) );</span><br><span class="line">    &#125;</span><br><span class="line">    return &#123;</span><br><span class="line">        doSomething: doSomething,</span><br><span class="line">        doAnother: doAnother</span><br><span class="line">    &#125;; </span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure></p>
+<p>模块也是普通的函数，因此可以接受参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function CoolModule(id) &#123;</span><br><span class="line">    function identify() &#123;</span><br><span class="line">        console.log( id );</span><br><span class="line">    &#125;</span><br><span class="line">    return &#123;</span><br><span class="line">        identify: identify</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">var foo = CoolModule( &quot;foo&quot; );</span><br><span class="line">foo.identify();            // &quot;foo&quot;</span><br></pre></td></tr></table></figure></p>
+<p>模块模式另一个简单但强大的变化用法是，命名将要作为公共 API 返回的对象。这样可以在内部使用公共 API 对模块实例进行修 改，包括添加或删除方法和属性，以及修改它们的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">var foo = (function CoolModule(id) &#123; </span><br><span class="line">    function change() &#123;</span><br><span class="line">        // 修改公共 API</span><br><span class="line">        publicAPI.identify = identify2;</span><br><span class="line">    &#125;</span><br><span class="line">    function identify1() &#123;</span><br><span class="line">        console.log( id );</span><br><span class="line">    &#125;</span><br><span class="line">    function identify2() &#123;</span><br><span class="line">        console.log( id.toUpperCase() );</span><br><span class="line">    &#125;</span><br><span class="line">    var publicAPI = &#123; </span><br><span class="line">        change: change,</span><br><span class="line">        identify: identify1</span><br><span class="line">    &#125;;</span><br><span class="line">    return publicAPI;</span><br><span class="line">&#125;)( &quot;foo module&quot; );</span><br><span class="line"></span><br><span class="line">foo.identify(); // foo module</span><br><span class="line">foo.change();</span><br><span class="line">foo.identify(); // FOO MODULE</span><br></pre></td></tr></table></figure>
+<p><strong>现代的模块机制</strong></p>
+<p>大多数模块依赖加载器/管理器本质上都是将这种模块定义封装进一个友好的 API。下面是一些核心概念：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">var MyModules = (function Manager() &#123;</span><br><span class="line">    var modules = &#123;&#125;;</span><br><span class="line">    function define(name, deps, impl) &#123;</span><br><span class="line">        for (var i=0; i&lt;deps.length; i++) &#123;</span><br><span class="line">            deps[i] = modules[deps[i]];</span><br><span class="line">        &#125;</span><br><span class="line">        modules[name] = impl.apply( impl, deps );</span><br><span class="line">    &#125;</span><br><span class="line">    function get(name) &#123; </span><br><span class="line">        return modules[name];</span><br><span class="line">    &#125;</span><br><span class="line">    return &#123;</span><br><span class="line">        define: define,</span><br><span class="line">        get: get</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;)();</span><br><span class="line"></span><br><span class="line">// 如何使用它来注册模块呢？</span><br><span class="line">MyModules.define( &quot;bar&quot;, [], function() &#123;</span><br><span class="line">    function hello(who) &#123;</span><br><span class="line">        return &quot;Let me introduce: &quot; + who;</span><br><span class="line">    &#125;</span><br><span class="line">    return &#123;</span><br><span class="line">        hello: hello</span><br><span class="line">    &#125;; </span><br><span class="line">&#125; );</span><br><span class="line">MyModules.define( &quot;foo&quot;, [&quot;bar&quot;], function(bar) &#123;</span><br><span class="line">    var hungry = &quot;hippo&quot;;</span><br><span class="line">    function awesome() &#123;</span><br><span class="line">        console.log( bar.hello( hungry ).toUpperCase());</span><br><span class="line">    &#125;</span><br><span class="line">    return &#123;</span><br><span class="line">        awesome: awesome</span><br><span class="line">    &#125;;</span><br><span class="line">&#125; );</span><br><span class="line">var bar = MyModules.get( &quot;bar&quot; );</span><br><span class="line">var foo = MyModules.get( &quot;foo&quot; );</span><br><span class="line">console.log( bar.hello( &quot;hippo&quot; ) );    // Let me introduce: hippo </span><br><span class="line">foo.awesome();                          // LET ME INTRODUCE: HIPPO</span><br></pre></td></tr></table></figure></p>
+<p>这段代码的核心是 <code>modules[name] = impl.apply(impl, deps)</code>。为模块的定义引入了包装函数（可以传入任何依赖），并且将返回值，也就是模块的 API，储存在一个根据名字来管理的模块列表中</p>
+<p><strong>未来的模块机制</strong></p>
+<p>ES6 中为模块增加了一级语法支持。</p>
+<p>相较于之前的函数模块，ES6 模块更稳定：</p>
+<ul>
+<li>基于函数的模块并不是一个能被稳定识别的模式（编译器无法识别），它们 的 API 语义只有在运行时才会被考虑进来。因此可以在运行时修改一个模块 的 API</li>
+<li>ES6 模块 API 更加稳定（API 不会在运行时改变），由于编辑器知道这一点，因此可以在(的确也这样做了)编译期检查对导入模块的 API 成员的引用是否真实存在。如果 API 引用并不存在，编译器会在运行时抛出一个或多个“早期”错误，而不会像往常一样在运行期采用动态的解决方案。</li>
+</ul>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><h4 id="1-什么才算是一个闭包？"><a href="#1-什么才算是一个闭包？" class="headerlink" title="1.什么才算是一个闭包？"></a>1.什么才算是一个闭包？</h4><p>一个理想的闭包应该满足下面两个条件：</p>
+<ul>
+<li>函数持有对该作用域的引用，这个引用即为闭包</li>
+<li>函数在定义时的词法作用域以外的地方被调用</li>
+</ul>
+<h4 id="2-闭包有哪些应用？"><a href="#2-闭包有哪些应用？" class="headerlink" title="2.闭包有哪些应用？"></a>2.闭包有哪些应用？</h4><p>闭包是基于词法作用域书写代码时所产生的自然结果，我们的代码中随处可见闭包。你只需要理解并善用它</p>
+<ul>
+<li>在定时器、事件监听器、 Ajax 请求、跨窗口通信、Web Workers 或者任何其他的异步（或者同步）任务中，只要使用了回调函数（函数存在对该作用域的引用），实际上就是在使用闭包</li>
+<li><p>循坏与闭包。在循环中有异步操作时很难捕捉到变量 i 变化，利用闭包为每一个异步操作创建独立的作用域达到目的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for (var i=1; i&lt;=5; i++) &#123; </span><br><span class="line">    (function(j) &#123;</span><br><span class="line">        setTimeout( function timer() &#123;</span><br><span class="line">            console.log( j );</span><br><span class="line">        &#125;, j*1000 );</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>模块。在前端很多模块加载器中，都使用了闭包。模块要求有一个独立的作用域并返回内部方法，符合闭包的成型条件。</p>
+</li>
+</ul>
+<h4 id="3-前端模块化的发展？"><a href="#3-前端模块化的发展？" class="headerlink" title="3.前端模块化的发展？"></a>3.前端模块化的发展？</h4><ul>
+<li><a href="http://www.cnblogs.com/zhuzhenwei918/p/7426904.html" target="_blank" rel="noopener">JavaScript模块化</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/你不知道的JS/" rel="tag"># 你不知道的JS</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/01/（上一）2-词法作用域/" rel="next" title="（上一）2-词法作用域">
+                <i class="fa fa-chevron-left"></i> （上一）2-词法作用域
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/22/H5-canvas-API-总览/" rel="prev" title="[H5] - canvas API 总览">
+                [H5] - canvas API 总览 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="June" />
+          <p class="site-author-name" itemprop="name">June</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/JJChu" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://ws1.sinaimg.cn/large/b6d81e13ly1fow7dwvspij20e80e8q2v.jpg" target="_blank" title="WeChat">
+                  
+                    <i class="fa fa-fw fa-weixin"></i>
+                  
+                  WeChat
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/3067616787/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#闭包定义"><span class="nav-number">1.</span> <span class="nav-text">闭包定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#闭包"><span class="nav-number">1.1.</span> <span class="nav-text">闭包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景"><span class="nav-number">1.2.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#回调函数"><span class="nav-number">1.2.1.</span> <span class="nav-text">回调函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#循环和闭包"><span class="nav-number">1.2.2.</span> <span class="nav-text">循环和闭包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模块"><span class="nav-number">1.2.3.</span> <span class="nav-text">模块</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">2.</span> <span class="nav-text">小结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么才算是一个闭包？"><span class="nav-number">2.0.1.</span> <span class="nav-text">1.什么才算是一个闭包？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-闭包有哪些应用？"><span class="nav-number">2.0.2.</span> <span class="nav-text">2.闭包有哪些应用？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-前端模块化的发展？"><span class="nav-number">2.0.3.</span> <span class="nav-text">3.前端模块化的发展？</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">June</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
